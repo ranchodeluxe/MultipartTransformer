@@ -1,0 +1,15 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<plugins>
+  <pyqgis_plugin name='inasafe multipart transformer' version='0.1'>
+    <description>Experimental and Mental</description>
+    <version>0.1</version>
+    <qgis_minimum_version>0.1</qgis_minimum_version>
+    <homepage>https://github.com/thebigspoon/multipart-transformer</homepage>
+    <file_name>insafe_multipart_transformer.zip</file_name>
+    <author_name>Greg Corradini, ChopShop</author_name>
+    <download_url>https://github.com/thebigspoon/multipart-transformer/v01/some_zip_here.zip</download_url>
+    <uploaded_by>sudobangbang</uploaded_by>
+    <create_date>2013-09-19</create_date>
+    <update_date>2013-09-19</update_date>
+  </pyqgis_plugin>
+</plugins>
