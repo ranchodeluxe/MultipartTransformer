@@ -89,9 +89,10 @@ class GeomProcessingThread( QThread ):
         except Exception, e:
             self.status_update.emit( 1 )
             self.general_error.emit( "[ INSPECT ERROR ]: %s" % str( e ), 2 )
-            reply = QMessageBox.critical( None, "Critical",
-            "[ ERROR ] there was a cricitcal error " \
-            "during geometry inspection in the GeomProcessingThread" % 
+            reply = QMessageBox.critical( 
+                None, 
+                "Critical", 
+                "[ ERROR ] there was a cricitcal error during geometry inspection in the GeomProcessingThread"
             )
             return False
 
@@ -177,9 +178,10 @@ class GeomProcessingThread( QThread ):
         except Exception, e:
             self.status_update.emit( nFeat ) # drive it to the end
             self.general_error.emit( "[ M2S ERROR ]: %s" % str( e ), 2 )
-            reply = QMessageBox.critical( None, "Critical",
-            "[ ERROR ] there was a cricitcal error " \
-            "during geometry transformation in the GeomProcessingThread" % 
+            reply = QMessageBox.critical( 
+                None, 
+                "Critical",
+                "[ ERROR ] there was a cricitcal error during geometry transformation in the GeomProcessingThread" 
             )
             return False
 

@@ -2,13 +2,12 @@
 
 # Form implementation generated from reading ui file 'ui_multiparttransformer.ui'
 #
-# Created: Thu Sep 19 22:08:17 2013
+# Created: Fri Sep 20 12:03:21 2013
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-import os
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -17,7 +16,7 @@ except AttributeError:
 
 class Ui_MultipartTransformer(object):
     def setupUi(self, MultipartTransformer):
-        self.abspath = os.path.dirname( os.path.abspath( __file__ ) )
+        self.abspath = os.path.dirname( os.path.abspath( __file__ ) ) 
         MultipartTransformer.setObjectName(_fromUtf8("MultipartTransformer"))
         MultipartTransformer.resize(394, 408)
         MultipartTransformer.setToolTip(_fromUtf8(""))
@@ -43,17 +42,17 @@ class Ui_MultipartTransformer(object):
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.btnBrowse = QtGui.QPushButton(MultipartTransformer)
-        self.btnBrowse.setGeometry(QtCore.QRect(10, 50, 171, 31))
+        self.btnBrowse.setGeometry(QtCore.QRect(10, 40, 191, 41))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(os.path.join( self.abspath, "icons/browser_button.png"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnBrowse.setIcon(icon)
         self.btnBrowse.setIconSize(QtCore.QSize(25, 25))
         self.btnBrowse.setObjectName(_fromUtf8("btnBrowse"))
         self.btnTOC = QtGui.QPushButton(MultipartTransformer)
-        self.btnTOC.setGeometry(QtCore.QRect(190, 50, 41, 31))
+        self.btnTOC.setGeometry(QtCore.QRect(210, 40, 51, 41))
         self.btnTOC.setText(_fromUtf8(""))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(os.path.join( self.abspath, "icons/layers_button.png"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(os.path.join( self.abspath, "icons/layer_button.png"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnTOC.setIcon(icon1)
         self.btnTOC.setIconSize(QtCore.QSize(30, 30))
         self.btnTOC.setObjectName(_fromUtf8("btnTOC"))
@@ -62,7 +61,7 @@ class Ui_MultipartTransformer(object):
         QtCore.QMetaObject.connectSlotsByName(MultipartTransformer)
 
     def retranslateUi(self, MultipartTransformer):
-        MultipartTransformer.setWindowTitle(QtGui.QApplication.translate("MultipartTransformer", "Multipart Transformer", None, QtGui.QApplication.UnicodeUTF8))
+        MultipartTransformer.setWindowTitle(QtGui.QApplication.translate("MultipartTransformer", "InaSAFE Multipart Transformer", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MultipartTransformer", "Inspect polygon shapefiles for multi-part geometries.\n"
 "Double click ones you want to convert to single-part geometries", None, QtGui.QApplication.UnicodeUTF8))
         self.btnBrowse.setToolTip(QtGui.QApplication.translate("MultipartTransformer", "browse to a shapefile directory", None, QtGui.QApplication.UnicodeUTF8))

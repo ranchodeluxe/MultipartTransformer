@@ -78,9 +78,9 @@ Double click ones you want to convert to single-part geometries</string>
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>50</y>
-     <width>171</width>
-     <height>31</height>
+     <y>40</y>
+     <width>191</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -103,10 +103,10 @@ Double click ones you want to convert to single-part geometries</string>
   <widget class="QPushButton" name="btnTOC">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>50</y>
-     <width>41</width>
-     <height>31</height>
+     <x>210</x>
+     <y>40</y>
+     <width>51</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="toolTip">

@@ -43,8 +43,8 @@ HELP = help/build/html
 
 default: compile
 
-#compile: $(UI_FILES) $(RESOURCE_FILES)
-compile:  $(RESOURCE_FILES)
+compile: $(UI_FILES) $(RESOURCE_FILES)
+#compile:  $(RESOURCE_FILES)
 
 %_rc.py : %.qrc
 	pyrcc4 -o $*_rc.py  $<
