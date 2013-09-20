@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/plugins/multiparttransformer" >
-        <file>icon.png</file>
+        <file>icon2.png</file>
     </qresource>
 </RCC>

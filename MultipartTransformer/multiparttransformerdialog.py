@@ -104,8 +104,8 @@ class MultipartTransformerDialog(QtGui.QDialog):
         #self.dialogLogger( "[ PROCESSED ]: %i" % self.number_processed )
         self.ui.progressBar.setValue( self.number_processed )
         if self.number_processed == self.number_to_process:
-            self.dialogLogger( "[ FINAL ] %i" % self.number_processed )
+            #self.dialogLogger( "[ FINAL ] %i" % self.number_processed )
             self.ui.progressBar.reset()
 
     def dialogLogger( self, message ):
-        QgsMessageLog.logMessage( str( message ), "InaSAFE GUI" )
+        QgsMessageLog.logMessage( str( message ), "MTransGUI" )

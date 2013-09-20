@@ -8,6 +8,11 @@ import resources_rc
 # Import the code for the dialog
 from multiparttransformerdialog import MultipartTransformerDialog
 import os, glob, re, sys 
+try:
+    _fromUtf8 = QString.fromUtf8
+except AttributeError:
+    _fromUtf8 = lambda s: s
+
 
 #
 #
@@ -23,7 +28,7 @@ class GeomProcessingThread( QThread ):
     geom_status_update = pyqtSignal( int )
     finished = pyqtSignal()
     update_widget_colors = pyqtSignal()
-    general_error = pyqtSignal( str )
+    general_error = pyqtSignal( str, int )
     log_message = pyqtSignal( str )
     status_update = pyqtSignal( int )
     add_2_widget = pyqtSignal( object, str, object ) # icon, message, QgsVectorLayer
@@ -41,7 +46,7 @@ class GeomProcessingThread( QThread ):
         try:
             work_method = getattr( self, self.func_signature2run )
         except AttributeError:
-            reply = QMessageBox.critical( self.iface.mainWindow(), "Critical",
+            reply = QMessageBox.critical( None, "Critical",
                     "The method %s was not found on the GeomProcessingThread class " % self.func_signature2run )
             self.finished.emit()
             return # break
@@ -74,7 +79,7 @@ class GeomProcessingThread( QThread ):
 
         except Exception, e:
             self.status_update.emit( 1 )
-            self.general_error.emit( "[ INSPECT ERROR ]: %s" % str( e ) )
+            self.general_error.emit( "[ INSPECT ERROR ]: %s" % str( e ), 2 )
             return False
 
 
@@ -127,7 +132,7 @@ class GeomProcessingThread( QThread ):
             nFeat = vprovider.featureCount()
             nElement = 0
 
-            self.geom_status_update.emit( nElement )
+            self.geom_status_update.emit( 0 ) # just to make sure
             while vprovider.nextFeature( inFeat ):
                 nElement += 1
                 inGeom = inFeat.geometry()
@@ -138,8 +143,8 @@ class GeomProcessingThread( QThread ):
                     outFeat.setGeometry( i )
                     writer.addFeature( outFeat )
 
-                # only update progress bar every 20 features
-                if (( nElement % 20 ) == 0 ) or nElement == nFeat: 
+                # only update progress bar every so many features
+                if (( nElement % 10 ) == 0 ) or nElement == nFeat: 
                     self.geom_status_update.emit( nElement )
             del writer
 
@@ -150,7 +155,7 @@ class GeomProcessingThread( QThread ):
             return True
         except Exception, e:
             self.status_update.emit( nFeat ) # drive it to the end
-            self.general_error.emit( "[ M2S ERROR ]: %s" % str( e ) )
+            self.general_error.emit( "[ M2S ERROR ]: %s" % str( e ), 2 )
             return False
 
     def stop( self ):
@@ -195,9 +200,7 @@ class MultipartTransformer:
         self.cLayer = None
         # current layer dataProvider ref (set in handleLayerChange)
         self.provider = None
-        # database connection
-        self.conn = None
-        self.crs = None
+        self.abspath = os.path.dirname( os.path.abspath( __file__ ) )
 
 
         #
@@ -211,8 +214,8 @@ class MultipartTransformer:
     def initGui(self):
         # Create action that will start plugin configuration
         self.action = QAction(
-            QIcon(":/plugins/multiparttransformer/icon.png"),
-            u"convert multi-part polygons with style!", self.iface.mainWindow())
+            QIcon(QPixmap(_fromUtf8(os.path.join( self.abspath, "icon2.png")))),
+            u"Multipart Transform: convert multi-part polygons with style!", self.iface.mainWindow())
         # connect the action to the run method
         QObject.connect(self.action, SIGNAL("triggered()"), self.run)
 
@@ -282,6 +285,14 @@ class MultipartTransformer:
                     wthread.terminate()
             self.geom_worker_threads = []
 
+    def isTargetLayerType( self, lyr ):
+        if ( lyr.type() != QgsMapLayer.VectorLayer or
+             str( lyr.dataProvider().name() ) != 'ogr' or
+             lyr.dataProvider().geometryType() not in 
+             ( QGis.WKBPolygon, QGis.WKBMultiPolygon, QGis.WKBMultiPolygon25D, QGis.WKBPolygon25D ) ):
+             return False
+        return True
+
     def addListWidgetItems( self, list_type, list_of_items ):
         ''' 
             set up each item in our list as a QWidgetListItem
@@ -292,7 +303,7 @@ class MultipartTransformer:
                 try:
                     lyr = QgsVectorLayer( item,  os.path.splitext( os.path.split( item )[1] )[0] , "ogr" )
                 except Exception, e:
-                    self.logger( "[ ERROR ]: QgsVectorLayer cannot be created > %s" % str( e ) )
+                    self.logger( "[ ERROR ]: QgsVectorLayer cannot be created > %s" % str( e ), level=2 )
                     continue
 
                 if not lyr:
@@ -301,9 +312,7 @@ class MultipartTransformer:
                 if not lyr.dataProvider():
                     continue
 
-                if ( lyr.type() != QgsMapLayer.VectorLayer or
-                     str( lyr.dataProvider().name() ) != 'ogr' or
-                     lyr.dataProvider().geometryType() not in [ QGis.WKBPolygon, QGis.WKBMultiPolygon ] ):
+                if not self.isTargetLayerType( lyr ):
                     continue
 
                 filtered.append( lyr )
@@ -350,7 +359,7 @@ class MultipartTransformer:
     def unbindWidgetItemClicks( self ):
         try:
             self.dlg.ui.listWidget.itemDoubleClicked.disconnect( self.handleItemDblClick )
-            self.logger( "[ CLICK DISABLED]" );
+            #self.logger( "[ CLICK DISABLED]" );
         except TypeError, te: # it's not connected
             pass
 
@@ -379,15 +388,15 @@ class MultipartTransformer:
         return False
 
     def handleItemDblClick( self, widget_item ):
-        self.logger( "[ ITEM CLICKED ]: %s" % str( widget_item.layer_instance) )
+        #self.logger( "[ ITEM CLICKED ]: %s" % str( widget_item.layer_instance) )
 
         if self.hasRunningThreads():
-            QMessageBox.information( self.iface.mainWindow(), self.dlg.tr("Stop Doing That!"),
+            QMessageBox.information( self.dlg, self.dlg.tr("Stop Doing That!"),
                 self.dlg.tr( "Looks like there's already work in progress...give it a second dude" ) )
             return # do nada
         
 
-        convert = QMessageBox.question( self.iface.mainWindow(), self.dlg.tr("Process Geometry"),
+        convert = QMessageBox.question( self.dlg, self.dlg.tr("Process Geometry"),
                    self.dlg.tr("Would you like to convert the layers:\n\n%1\n\nfrom a multi-part geometry to a single-part?").arg( str(widget_item.layer_instance.name()) ),
                    QMessageBox.Yes, QMessageBox.No, QMessageBox.NoButton )
 
@@ -428,7 +437,9 @@ class MultipartTransformer:
     def loadLayer2TOC( self, int_bool, new_lyr_path ):
 
         if int_bool: # success
-            QMessageBox.information( self.iface.mainWindow(),
+            self.dlg.ui.progressBar.reset()
+
+            QMessageBox.information( self.dlg,
                 self.dlg.tr("Valid Geometry Conversion!"),
                 self.dlg.tr("The conversion was successful. The new shapefile is located here path:\n\n%1\n\nAnd it will be added to this Qgis mapfile now!").arg( new_lyr_path ) )
 
@@ -438,15 +449,11 @@ class MultipartTransformer:
                 "ogr"
             )
 
-            self.dlg.ui.progressBar.reset()
 
     def loadTOCLayers( self ):
         filtered = []
         for lyr in self.canvas.layers():
-            # make sure to use non-short-circut OR to filter
-            if ( lyr.type() != QgsMapLayer.VectorLayer or
-                 str( lyr.dataProvider().name() ) != 'ogr' or
-                 lyr.dataProvider().geometryType() not in [ QGis.WKBPolygon, QGis.WKBMultiPolygon ] ):
+            if not self.isTargetLayerType( lyr ):
                 continue
             filtered.append( lyr )
 
@@ -461,7 +468,6 @@ class MultipartTransformer:
         #
         self.cLayer = self.canvas.currentLayer()
 
-    def logger(self, message ):
-        QgsMessageLog.logMessage( str(message), 'InaSAFE' )
-
+    def logger(self, message, level=0 ):
+        QgsMessageLog.logMessage( str(message), 'MTrans', level )
 
