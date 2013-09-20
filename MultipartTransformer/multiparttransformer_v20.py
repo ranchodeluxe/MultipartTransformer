@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Import the PyQt and QGIS libraries
 from PyQt4.QtCore import *
+import pdb
 from PyQt4.QtGui import *
 from qgis.core import *
 # Initialize Qt resources from file resources.py
@@ -129,6 +130,7 @@ class GeomProcessingThreadv20( QThread ):
                 )[1] 
             )[0] + "_w_singleparts.shp"
             self.log_message.emit( "[ BEFORE WRITER ]" )
+
             writer = QgsVectorFileWriter(
                 os.path.join( shp_path, shp_name ),
                 "System",
@@ -159,9 +161,10 @@ class GeomProcessingThreadv20( QThread ):
             while features.nextFeature( inFeat ):
                 nElement += 1
                 inGeom = inFeat.geometry()
-                atMap = inFeat.attributeMap()
+                # API change, no more maps
+                attribute_map = inFeat.attributes()
                 featList = self.extract( inGeom )
-                outFeat.setAttributeMap( atMap )
+                outFeat.setAttributes( attribute_map )
                 for i in featList:
                     outFeat.setGeometry( i )
                     writer.addFeature( outFeat )
