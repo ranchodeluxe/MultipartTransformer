@@ -53,7 +53,7 @@ class Ui_MultipartTransformer(object):
         self.btnTOC.setGeometry(QtCore.QRect(210, 40, 51, 41))
         self.btnTOC.setText(_fromUtf8(""))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(os.path.join( self.abspath, "icons/layer_button.png"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(os.path.join( self.abspath, "icons/layers_button.png"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnTOC.setIcon(icon1)
         self.btnTOC.setIconSize(QtCore.QSize(30, 30))
         self.btnTOC.setObjectName(_fromUtf8("btnTOC"))

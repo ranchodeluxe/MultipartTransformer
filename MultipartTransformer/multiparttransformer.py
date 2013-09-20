@@ -479,6 +479,10 @@ class MultipartTransformer:
             filtered.append( lyr )
 
         self.dlg.ui.listWidget.clear()
+        if len( filtered ) == 0:
+            QMessageBox.information( self.dlg,
+                self.dlg.tr("No Multi-part Polygons"),
+                self.dlg.tr("There were no multi-part polygons found in the TOC") )
         self.addListWidgetItems( 'toc', filtered )
 
 
