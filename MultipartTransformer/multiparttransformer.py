@@ -20,11 +20,12 @@ class GeomProcessingThread( QThread ):
     # SIGNALS
     #
     geom_m2s = pyqtSignal( int, str )
+    geom_status_update = pyqtSignal( int )
     finished = pyqtSignal()
     update_widget_colors = pyqtSignal()
     general_error = pyqtSignal( str )
     log_message = pyqtSignal( str )
-    status_update = pyqtSignal( str )
+    status_update = pyqtSignal( int )
     add_2_widget = pyqtSignal( object, str, object ) # icon, message, QgsVectorLayer
 
     def __init__( self, parent_thread, lyr, func_name, list_type ):
@@ -65,31 +66,22 @@ class GeomProcessingThread( QThread ):
             display_text = str( self.lyr.name() )
             if self.list_type == 'browse':
                 display_text = os.path.split( str(self.lyr.dataProvider().dataSourceUri()).split( "|" )[0] )[1] 
+
+ 
+            self.status_update.emit( 1 )
             self.add_2_widget.emit( icon, display_text, self.lyr )
+            return True
 
         except Exception, e:
+            self.status_update.emit( 1 )
             self.general_error.emit( "[ INSPECT ERROR ]: %s" % str( e ) )
             return False
 
 
-    def extractAsSingle( self, geom ):
+    def extract( self, geom ):
         multi_geom = QgsGeometry()
         temp_geom = []
-        if geom.type() == 0:
-          if geom.isMultipart():
-            multi_geom = geom.asMultiPoint()
-            for i in multi_geom:
-              temp_geom.append( QgsGeometry().fromPoint ( i ) )
-          else:
-            temp_geom.append( geom )
-        elif geom.type() == 1:
-          if geom.isMultipart():
-            multi_geom = geom.asMultiPolyline()
-            for i in multi_geom:
-              temp_geom.append( QgsGeometry().fromPolyline( i ) )
-          else:
-            temp_geom.append( geom )
-        elif geom.type() == 2:
+        if geom.type() == 2:
           if geom.isMultipart():
             multi_geom = geom.asMultiPolygon()
             for i in multi_geom:
@@ -134,15 +126,21 @@ class GeomProcessingThread( QThread ):
             outGeom = QgsGeometry()
             nFeat = vprovider.featureCount()
             nElement = 0
+
+            self.geom_status_update.emit( nElement )
             while vprovider.nextFeature( inFeat ):
-              nElement += 1
-              inGeom = inFeat.geometry()
-              atMap = inFeat.attributeMap()
-              featList = self.extractAsSingle( inGeom )
-              outFeat.setAttributeMap( atMap )
-              for i in featList:
-                outFeat.setGeometry( i )
-                writer.addFeature( outFeat )
+                nElement += 1
+                inGeom = inFeat.geometry()
+                atMap = inFeat.attributeMap()
+                featList = self.extract( inGeom )
+                outFeat.setAttributeMap( atMap )
+                for i in featList:
+                    outFeat.setGeometry( i )
+                    writer.addFeature( outFeat )
+
+                # only update progress bar every 20 features
+                if (( nElement % 20 ) == 0 ) or nElement == nFeat: 
+                    self.geom_status_update.emit( nElement )
             del writer
 
             # emit event/singal that everything was successful so we can 
@@ -151,6 +149,7 @@ class GeomProcessingThread( QThread ):
 
             return True
         except Exception, e:
+            self.status_update.emit( nFeat ) # drive it to the end
             self.general_error.emit( "[ M2S ERROR ]: %s" % str( e ) )
             return False
 
@@ -287,21 +286,14 @@ class MultipartTransformer:
         ''' 
             set up each item in our list as a QWidgetListItem
         '''
-        # make sure to clean worker threads
-        # from previous runs before we create new ones
-        self.cleanWorkers()
-
-        # clear the listWidget box
-        self.dlg.ui.listWidget.clear()
-
-        for item in list_of_items:
-            # either item is already a QgsVectorLayer or it is a shapefile path
-            lyr = item
-            if list_type == 'browse':
-                #self.logger( "[ PATH ]: %s" % item )   
-                # overwrite lyr with true QgsVectorLayer
-                lyr = QgsVectorLayer( item,  os.path.splitext( os.path.split( item )[1] )[0] , "ogr" )
-                #self.logger( "[ LAYER ]: %s" % str( lyr ))  
+        filtered = []
+        if list_type == 'browse':
+            for item in list_of_items:
+                try:
+                    lyr = QgsVectorLayer( item,  os.path.splitext( os.path.split( item )[1] )[0] , "ogr" )
+                except Exception, e:
+                    self.logger( "[ ERROR ]: QgsVectorLayer cannot be created > %s" % str( e ) )
+                    continue
 
                 if not lyr:
                     continue
@@ -309,12 +301,30 @@ class MultipartTransformer:
                 if not lyr.dataProvider():
                     continue
 
-                # use non-short-circut OR here to filter out things we don't want 
                 if ( lyr.type() != QgsMapLayer.VectorLayer or
                      str( lyr.dataProvider().name() ) != 'ogr' or
                      lyr.dataProvider().geometryType() not in [ QGis.WKBPolygon, QGis.WKBMultiPolygon ] ):
                     continue
 
+                filtered.append( lyr )
+
+        elif list_type == 'toc':
+            filtered = list_of_items # already filtered
+
+        # make sure to clean worker threads
+        # from previous runs before we create new ones
+        self.cleanWorkers()
+
+        # clear the listWidget box
+        self.dlg.ui.listWidget.clear()
+
+        # update the dialog with total number of items 
+        self.dlg.number_to_process = len( filtered )
+        self.dlg.number_processed = 0
+        self.dlg.ui.progressBar.setMaximum( self.dlg.number_to_process )
+        #self.logger( "[ TO PROCESS ]: %i" % self.dlg.number_to_process )
+
+        for lyr in filtered:
 
             #   
             #   
@@ -333,6 +343,7 @@ class MultipartTransformer:
             worker_thread.log_message.connect( self.logger )
             worker_thread.finished.connect( worker_thread.quit )
             worker_thread.add_2_widget.connect( self.dlg.add2ListWidget )
+            worker_thread.status_update.connect( self.dlg.handleProgressUpdate )
             worker_thread.start()
             self.worker_threads.append( worker_thread )
 
@@ -353,15 +364,44 @@ class MultipartTransformer:
     def handleItemSelectionChanged( self ):
         pass
 
+    def hasRunningThreads( self ):
+        '''
+            if the GUI currently has threads executing
+            then return True else False
+        '''
+        for wthread in self.worker_threads:
+            if wthread.isRunning():
+                return True
+
+        for wthread in self.geom_worker_threads:
+            if wthread.isRunning():
+                return True
+        return False
+
     def handleItemDblClick( self, widget_item ):
         self.logger( "[ ITEM CLICKED ]: %s" % str( widget_item.layer_instance) )
+
+        if self.hasRunningThreads():
+            QMessageBox.information( self.iface.mainWindow(), self.dlg.tr("Stop Doing That!"),
+                self.dlg.tr( "Looks like there's already work in progress...give it a second dude" ) )
+            return # do nada
+        
+
         convert = QMessageBox.question( self.iface.mainWindow(), self.dlg.tr("Process Geometry"),
-                   self.dlg.tr( """Would you like to convert the layers:\n\n%1\n\nfrom a multi-part geometry to a single-part?""").arg( str(widget_item.layer_instance.name()) ),
+                   self.dlg.tr("Would you like to convert the layers:\n\n%1\n\nfrom a multi-part geometry to a single-part?").arg( str(widget_item.layer_instance.name()) ),
                    QMessageBox.Yes, QMessageBox.No, QMessageBox.NoButton )
 
         if convert == QMessageBox.Yes:
-            # cleanup other processing threads before doing this one
+            # make sure to terminate other threads before running
             self.cleanWorkers( wtype='geom_workers' )
+
+            # update the dialog with total number of items 
+            self.dlg.number_to_process = widget_item.layer_instance.dataProvider().featureCount()
+            self.dlg.number_processed = 0
+            self.dlg.ui.progressBar.setMaximum( self.dlg.number_to_process )
+            #self.logger( "[ TO PROCESS ]: %i" % self.dlg.number_to_process )
+
+
             #   
             #   
             #  reading *big* shapefiles can bog down the fileDialog.
@@ -379,6 +419,7 @@ class MultipartTransformer:
             worker_thread.log_message.connect( self.logger )
             worker_thread.finished.connect( worker_thread.quit )
             worker_thread.geom_m2s.connect( self.loadLayer2TOC )
+            worker_thread.geom_status_update.connect( self.dlg.handleProgressUpdate )
             worker_thread.start()
             self.geom_worker_threads.append( worker_thread )
         else:

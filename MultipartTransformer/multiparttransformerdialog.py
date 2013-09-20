@@ -18,11 +18,12 @@ class MultipartTransformerDialog(QtGui.QDialog):
         # Set up the user interface from Designer.
         self.ui = Ui_MultipartTransformer()
         self.ui.setupUi(self)
-        self.setFixedSize(394,362) # dimensions in ui_multiparttransformer.py
+        self.setFixedSize(394,408) # dimensions in ui_multiparttransformer.py
         self.fileDialog = QtGui.QFileDialog(self)
         self.ui.listWidget.clear() # default to empty
         self.abspath = os.path.dirname( os.path.abspath( __file__ ) ) 
         self.fileDialogState = None # default
+        self.items_to_process = None 
      
     #   
     #   
@@ -98,5 +99,13 @@ class MultipartTransformerDialog(QtGui.QDialog):
         for i in range( self.ui.listWidget.count() ):
             yield self.ui.listWidget.item( i )
 
+    def handleProgressUpdate( self, status):
+        self.number_processed += status
+        #self.dialogLogger( "[ PROCESSED ]: %i" % self.number_processed )
+        self.ui.progressBar.setValue( self.number_processed )
+        if self.number_processed == self.number_to_process:
+            self.dialogLogger( "[ FINAL ] %i" % self.number_processed )
+            self.ui.progressBar.reset()
+
     def dialogLogger( self, message ):
-        QgsMessageLog.logMessage( str( message ), "MULTIPOLY DIALOG" )
+        QgsMessageLog.logMessage( str( message ), "InaSAFE GUI" )

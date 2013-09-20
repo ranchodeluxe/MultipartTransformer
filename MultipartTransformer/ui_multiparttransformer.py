@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiparttransformer.ui'
 #
-# Created: Thu Sep 19 17:34:06 2013
+# Created: Thu Sep 19 19:05:06 2013
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_MultipartTransformer(object):
     def setupUi(self, MultipartTransformer):
         MultipartTransformer.setObjectName(_fromUtf8("MultipartTransformer"))
-        MultipartTransformer.resize(394, 362)
+        MultipartTransformer.resize(394, 408)
         MultipartTransformer.setToolTip(_fromUtf8(""))
         self.btnBrowse = QtGui.QPushButton(MultipartTransformer)
         self.btnBrowse.setGeometry(QtCore.QRect(10, 50, 171, 31))
@@ -48,6 +48,11 @@ class Ui_MultipartTransformer(object):
         self.label.setFont(font)
         self.label.setWordWrap(True)
         self.label.setObjectName(_fromUtf8("label"))
+        self.progressBar = QtGui.QProgressBar(MultipartTransformer)
+        self.progressBar.setGeometry(QtCore.QRect(10, 370, 371, 23))
+        self.progressBar.setAutoFillBackground(False)
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setObjectName(_fromUtf8("progressBar"))
 
         self.retranslateUi(MultipartTransformer)
         QtCore.QMetaObject.connectSlotsByName(MultipartTransformer)
