@@ -23,7 +23,9 @@ except AttributeError:
 class GeomProcessingThread( QThread ):
 
     #
+    #
     # EVENTS/SIGNALS
+    #
     #
     geom_m2s = pyqtSignal( int, str )
     geom_status_update = pyqtSignal( int )
@@ -48,7 +50,8 @@ class GeomProcessingThread( QThread ):
             work_method = getattr( self, self.func_signature2run )
         except AttributeError:
             reply = QMessageBox.critical( None, "Critical",
-                    "The method %s was not found on the GeomProcessingThread class " % self.func_signature2run )
+            "The method %s was not found on the GeomProcessingThread class " % 
+            self.func_signature2run )
             self.finished.emit()
             return # break
 
@@ -74,7 +77,9 @@ class GeomProcessingThread( QThread ):
 
             display_text = str( self.lyr.name() )
             if self.list_type == 'browse':
-                display_text = os.path.split( str(self.lyr.dataProvider().dataSourceUri()).split( "|" )[0] )[1] 
+                display_text = os.path.split( 
+                    str(self.lyr.dataProvider().dataSourceUri()).split( "|" )[0] 
+                )[1] 
 
  
             self.status_update.emit( 1 )
@@ -84,6 +89,10 @@ class GeomProcessingThread( QThread ):
         except Exception, e:
             self.status_update.emit( 1 )
             self.general_error.emit( "[ INSPECT ERROR ]: %s" % str( e ), 2 )
+            reply = QMessageBox.critical( None, "Critical",
+            "[ ERROR ] there was a cricitcal error " \
+            "during geometry inspection in the GeomProcessingThread" % 
+            )
             return False
 
 
@@ -112,8 +121,14 @@ class GeomProcessingThread( QThread ):
             fields = vprovider.fields()
             geom_type = QGis.WKBPolygon
 
-            shp_path = os.path.split( str( self.lyr.dataProvider().dataSourceUri() ).split("|")[0] )[0]
-            shp_name = os.path.splitext( os.path.split( str( self.lyr.dataProvider().dataSourceUri() ).split("|")[0] )[1] )[0] + "_w_singleparts.shp"
+            shp_path = os.path.split( 
+                str( self.lyr.dataProvider().dataSourceUri() ).split("|")[0] 
+            )[0]
+            shp_name = os.path.splitext( 
+                os.path.split( 
+                    str( self.lyr.dataProvider().dataSourceUri() ).split("|")[0] 
+                )[1] 
+            )[0] + "_w_singleparts.shp"
             writer = QgsVectorFileWriter(
                 os.path.join( shp_path, shp_name ),
                 "CP1250",
@@ -124,9 +139,9 @@ class GeomProcessingThread( QThread ):
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
                 QMessageBox.critical(None, self.tr("Geometry Processing"),
-                        self.tr("There was an error creating the shapefile:\n\n\t%1").arg( str( writer.hasError() ) ),
-                        QMessageBox.Ok | QMessageBox.Default,
-                        QMessageBox.NoButton)
+                self.tr("There was an error creating the shapefile:\n\n\t%1").arg( str( writer.hasError() ) ),
+                QMessageBox.Ok | QMessageBox.Default,
+                QMessageBox.NoButton)
                 raise Exception( "[ CREATE ERROR ]: writing shapefile %s" % os.path.join( shp_path, shp_name ) )
 
             inFeat = QgsFeature()
@@ -152,14 +167,20 @@ class GeomProcessingThread( QThread ):
                     self.geom_status_update.emit( nElement )
             del writer
 
+            #
             # emit event/singal that everything was successful so we can 
             # add layer to the map
+            #
             self.geom_m2s.emit( 1, os.path.join( shp_path, shp_name ) ) # binary True/False
 
             return True
         except Exception, e:
             self.status_update.emit( nFeat ) # drive it to the end
             self.general_error.emit( "[ M2S ERROR ]: %s" % str( e ), 2 )
+            reply = QMessageBox.critical( None, "Critical",
+            "[ ERROR ] there was a cricitcal error " \
+            "during geometry transformation in the GeomProcessingThread" % 
+            )
             return False
 
     def stop( self ):
@@ -168,7 +189,6 @@ class GeomProcessingThread( QThread ):
 
     def cleanUp( self):
         pass
-
 
 
 
@@ -243,11 +263,11 @@ class MultipartTransformer:
 
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu(u"&InaSAFE Multipart Transformer", self.action)
+        self.iface.addPluginToMenu(u"&Multipart Transformer", self.action)
 
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu(u"&InaSAFE Multipart Transformer", self.action)
+        self.iface.removePluginMenu(u"&Multipart Transformer", self.action)
         self.iface.removeToolBarIcon(self.action)
 
 
@@ -324,14 +344,13 @@ class MultipartTransformer:
         elif list_type == 'toc':
             filtered = list_of_items # already filtered
 
-        # make sure to clean worker threads
+        #
+        # make sure to terminate worker threads
         # from previous runs before we create new ones
+        #
         self.cleanWorkers()
 
-        # clear the listWidget box
         self.dlg.ui.listWidget.clear()
-
-        # update the dialog with total number of items 
         self.dlg.number_to_process = len( filtered )
         self.dlg.number_processed = 0
         self.dlg.ui.progressBar.setMaximum( self.dlg.number_to_process )
@@ -364,7 +383,6 @@ class MultipartTransformer:
     def unbindWidgetItemClicks( self ):
         try:
             self.dlg.ui.listWidget.itemDoubleClicked.disconnect( self.handleItemDblClick )
-            #self.logger( "[ CLICK DISABLED]" );
         except TypeError, te: # it's not connected
             pass
 
@@ -373,15 +391,13 @@ class MultipartTransformer:
             item.setBackground( QBrush( Qt.white ) )
             item.setForeground( QBrush( Qt.black ) )
 
-        #self.dlg.ui.listWidget.itemDoubleClicked.connect( self.handleItemDblClick )
-
     def handleItemSelectionChanged( self ):
         pass
 
     def hasRunningThreads( self ):
         '''
-            if the GUI currently has threads executing
-            then return True else False
+        if the GUI currently has threads executing
+        then return True else False
         '''
         for wthread in self.worker_threads:
             if wthread.isRunning():
@@ -393,8 +409,6 @@ class MultipartTransformer:
         return False
 
     def handleItemDblClick( self, widget_item ):
-        #self.logger( "[ ITEM CLICKED ]: %s" % str( widget_item.layer_instance) )
-
         if self.hasRunningThreads():
             QMessageBox.information( self.dlg, self.dlg.tr("Stop Doing That!"),
                 self.dlg.tr( "Looks like there's already work in progress...give it a second dude" ) )
@@ -419,8 +433,8 @@ class MultipartTransformer:
             #   
             #   
             #  reading *big* shapefiles can bog down the fileDialog.
-            #  Thread this section below and emit signal for each
-            #  layer that finishes converting multi-part to single-part
+            #  Thread reading through a layer's features 
+            #  and emit a signal when geom processing is done 
             #   
             #   
             worker_thread = GeomProcessingThread(

@@ -26,15 +26,9 @@ class MultipartTransformerDialog(QtGui.QDialog):
         self.items_to_process = None 
      
     #   
-    #   
-    #  dialog interface
-    #   
-    #   
-    
-    #   
-    #  TODO: for some reasone saving QFileDialog.saveState() using
-    #  binary options does not work, this is a jenky workaround for now
-    #  make it better later
+    #  TODO: for unknown reasons saving QFileDialog.saveState() using
+    #  binary options does not work, this is a jenky workaround 
+    #  where we save state to the plugin directory in a textfile. 
     #   
     def getFileDialogState( self ):
         try:
@@ -65,34 +59,34 @@ class MultipartTransformerDialog(QtGui.QDialog):
         self.getFileDialogState()
         self.selected_filepath  = str( self.fileDialog.getExistingDirectory(self, "Select Directory", 
                                     ( '' if not self.fileDialogState else self.fileDialogState )) )
-        #self.dialogLogger( str( self.selected_filepath ) )
+
         if not self.selected_filepath or self.selected_filepath == '': 
             return
 
-        # resave the state always cause we're nice
+        # always resave the state cause we're nice
         self.fileDialogState = self.selected_filepath 
         self.setFileDialogState()
     
         #  get all shapefiles in this directory
         shps = glob.glob( os.path.join( self.selected_filepath, "*.shp" ) ) 
         if not shps or len(shps) == 0:
-            # clear the listWidget box
             self.ui.listWidget.clear()
             return
      
         # return exec to controller
-        #self.addListWidgetItems( shps, 'browse' )
         self.shapefiles_found.emit( 'browse', shps )
 
-
     def add2ListWidget( self, icon, text, layer_instance ):
-        #self.dialogLogger( "[ DISPLAY TEXT ]: %s" % str( text ) )
         item = QtGui.QListWidgetItem( icon, text )
-        # set default ( unenabled ) brush strokes
+        # set default brush strokes
         item.setBackground( QtGui.QBrush(QtCore.Qt.white) )
         item.setForeground( QtGui.QBrush(QtCore.Qt.black) )
         self.ui.listWidget.addItem( item )
-        # attempt to store layer state on the object
+        #
+        # attempt to store layer state 
+        # on the listWidgetItem for later use 
+        # on click hnadlers
+        #
         item.layer_instance = layer_instance
 
     def iterWidgetItems( self ):
@@ -109,3 +103,5 @@ class MultipartTransformerDialog(QtGui.QDialog):
 
     def dialogLogger( self, message ):
         QgsMessageLog.logMessage( str( message ), "MTransGUI" )
+
+
