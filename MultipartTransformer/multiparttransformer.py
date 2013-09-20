@@ -438,6 +438,8 @@ class MultipartTransformer:
                 "ogr"
             )
 
+            self.dlg.ui.progressBar.reset()
+
     def loadTOCLayers( self ):
         filtered = []
         for lyr in self.canvas.layers():

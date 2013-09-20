@@ -16,28 +16,6 @@
   <property name="toolTip">
    <string/>
   </property>
-  <widget class="QPushButton" name="btnBrowse">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>50</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>browse to a directory of shapefiles</string>
-   </property>
-   <property name="text">
-    <string>  Browse to Shapefiles</string>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>25</width>
-     <height>25</height>
-    </size>
-   </property>
-  </widget>
   <widget class="QListWidget" name="listWidget">
    <property name="geometry">
     <rect>
@@ -52,35 +30,6 @@
    </property>
    <property name="selectionRectVisible">
     <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnTOC">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>50</y>
-     <width>41</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>use TOC layers</string>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>layers_button.png</normaloff>layers_button.png</iconset>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>30</width>
-     <height>30</height>
-    </size>
-   </property>
-   <property name="autoRepeat">
-    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -123,6 +72,58 @@ Double click ones you want to convert to single-part geometries</string>
    </property>
    <property name="value">
     <number>0</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnBrowse">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>171</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>browse to a shapefile directory</string>
+   </property>
+   <property name="text">
+    <string>   Browse for Shapefiles</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/browser_button.png</normaloff>icons/browser_button.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>25</width>
+     <height>25</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnTOC">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>50</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>use toc layers</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/layers_button.png</normaloff>icons/layers_button.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
    </property>
   </widget>
  </widget>
