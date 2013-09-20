@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>394</width>
-    <height>408</height>
+    <height>434</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>90</y>
+     <y>120</y>
      <width>371</width>
      <height>261</height>
     </rect>
@@ -36,8 +36,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>0</y>
-     <width>381</width>
+     <y>10</y>
+     <width>361</width>
      <height>41</height>
     </rect>
    </property>
@@ -62,7 +62,7 @@ Double click ones you want to convert to single-part geometries</string>
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>370</y>
+     <y>400</y>
      <width>371</width>
      <height>23</height>
     </rect>
@@ -78,7 +78,7 @@ Double click ones you want to convert to single-part geometries</string>
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>70</y>
      <width>191</width>
      <height>41</height>
     </rect>
@@ -104,7 +104,7 @@ Double click ones you want to convert to single-part geometries</string>
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>40</y>
+     <y>70</y>
      <width>51</width>
      <height>41</height>
     </rect>

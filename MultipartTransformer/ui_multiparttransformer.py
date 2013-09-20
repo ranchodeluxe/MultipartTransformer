@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiparttransformer.ui'
 #
-# Created: Fri Sep 20 12:03:21 2013
+# Created: Fri Sep 20 15:20:53 2013
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,16 +13,16 @@ import os
 class Ui_MultipartTransformer(object):
     def setupUi(self, MultipartTransformer):
         self.abspath = os.path.dirname( os.path.abspath( __file__ ) ) 
-        MultipartTransformer.setObjectName( unicode("MultipartTransformer") )
-        MultipartTransformer.resize(394, 408)
+        MultipartTransformer.setObjectName(unicode("MultipartTransformer"))
+        MultipartTransformer.resize(394, 434)
         MultipartTransformer.setToolTip(unicode(""))
         self.listWidget = QtGui.QListWidget(MultipartTransformer)
-        self.listWidget.setGeometry(QtCore.QRect(10, 90, 371, 261))
+        self.listWidget.setGeometry(QtCore.QRect(10, 120, 371, 261))
         self.listWidget.setStyleSheet(unicode("border-bottom-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255));"))
         self.listWidget.setSelectionRectVisible(True)
         self.listWidget.setObjectName(unicode("listWidget"))
         self.label = QtGui.QLabel(MultipartTransformer)
-        self.label.setGeometry(QtCore.QRect(10, 0, 381, 41))
+        self.label.setGeometry(QtCore.QRect(10, 10, 361, 41))
         font = QtGui.QFont()
         font.setFamily(unicode("Sans Serif"))
         font.setPointSize(10)
@@ -33,19 +33,19 @@ class Ui_MultipartTransformer(object):
         self.label.setWordWrap(True)
         self.label.setObjectName(unicode("label"))
         self.progressBar = QtGui.QProgressBar(MultipartTransformer)
-        self.progressBar.setGeometry(QtCore.QRect(10, 370, 371, 23))
+        self.progressBar.setGeometry(QtCore.QRect(10, 400, 371, 23))
         self.progressBar.setAutoFillBackground(False)
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(unicode("progressBar"))
         self.btnBrowse = QtGui.QPushButton(MultipartTransformer)
-        self.btnBrowse.setGeometry(QtCore.QRect(10, 40, 191, 41))
+        self.btnBrowse.setGeometry(QtCore.QRect(10, 70, 191, 41))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(unicode(os.path.join( self.abspath, "icons/browser_button.png"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btnBrowse.setIcon(icon)
         self.btnBrowse.setIconSize(QtCore.QSize(25, 25))
         self.btnBrowse.setObjectName(unicode("btnBrowse"))
         self.btnTOC = QtGui.QPushButton(MultipartTransformer)
-        self.btnTOC.setGeometry(QtCore.QRect(210, 40, 51, 41))
+        self.btnTOC.setGeometry(QtCore.QRect(210, 70, 51, 41))
         self.btnTOC.setText(unicode(""))
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(unicode(os.path.join( self.abspath, "icons/layers_button.png"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)

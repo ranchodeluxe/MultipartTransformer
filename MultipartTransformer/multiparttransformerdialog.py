@@ -18,7 +18,7 @@ class MultipartTransformerDialog(QtGui.QDialog):
         # Set up the user interface from Designer.
         self.ui = Ui_MultipartTransformer()
         self.ui.setupUi(self)
-        self.setFixedSize(394,408) # dimensions in ui_multiparttransformer.py
+        self.setFixedSize(394,434) # dimensions in ui_multiparttransformer.py
         self.fileDialog = QtGui.QFileDialog(self)
         self.ui.listWidget.clear() # default to empty
         self.abspath = os.path.dirname( os.path.abspath( __file__ ) ) 
