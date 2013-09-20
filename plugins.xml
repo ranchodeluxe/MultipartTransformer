@@ -4,6 +4,7 @@
     <description>Experimental Tool To Transform Multi-part Polygons into Single-part Polygons</description>
     <version>0.1</version>
     <qgis_minimum_version>1.8</qgis_minimum_version>
+    <qgis_maximum_version>2.99</qgis_maximum_version>
     <homepage>https://github.com/thebigspoon/MultipartTransformer</homepage>
     <file_name>MultipartTransformer.zip</file_name>
     <author_name>Greg Corradini, ChopShop</author_name>
