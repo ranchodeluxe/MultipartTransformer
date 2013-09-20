@@ -6,33 +6,23 @@
 # This file should be included when you package your plugin.
 
 # Mandatory items:
-
-
 [general]
-name=InaSAFE Multipart Transformer
+category=Plugins
+version=1.0
+experimental=True
 qgisMinimumVersion=1.8
+qgisMaximumVersion=2.99
+name=Multipart Transformer
 description=Converts multi-part shapefile polygons into single-part geometries
 version=0.1
 author=Greg Corradini, ChopShop
 email=gregcorradini@gmail.com
-
 # end of mandatory metadata
 
 # Optional items:
 
-# Uncomment the following line and add your changelog entries:
-# changelog=
-
-# tags are comma separated with spaces allowed
-tags=
-
-homepage=
-tracker=
 repository=https://github.com/thebigspoon/multipart-transformer
-icon=icon.png
-# experimental flag
+icon=icon2.png
 experimental=True
-
-# deprecated flag (applies to the whole plugin, not just a single version
 deprecated=False
 
