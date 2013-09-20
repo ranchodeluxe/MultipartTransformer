@@ -8,11 +8,6 @@ import resources_rc
 # Import the code for the dialog
 from multiparttransformerdialog import MultipartTransformerDialog
 import os, glob, re, sys 
-try:
-    _fromUtf8 = QString.fromUtf8
-except AttributeError:
-    _fromUtf8 = lambda s: s
-
 
 #
 #
@@ -62,11 +57,12 @@ class GeomProcessingThreadv20( QThread ):
 
         try:
             all_attributes = self.lyr.dataProvider().attributeIndexes()
-            self.lyr.dataProvider().select( all_attributes )
+            #self.lyr.dataProvider().select( all_attributes )
             #  determine if the layer has multipart features, then give it the right icon
             icon = QIcon( os.path.join( self.abspath, 'single_icon.png' ) ) # default icon
             feat = QgsFeature()
-            while self.lyr.dataProvider().nextFeature(feat):
+            features = self.lyr.dataProvider().getFeatures()
+            while features.nextFeature( feat ):
 
                 #  TODO: we don't handle these, maybe we should mention bad things to user
                 #if feat.geometry().isGeosEmpty() or not feat.geometry().isGeosValid():
@@ -118,7 +114,9 @@ class GeomProcessingThreadv20( QThread ):
             #
             vprovider = self.lyr.dataProvider()
             all_attributes = vprovider.attributeIndexes()
-            vprovider.select( all_attributes )
+            # API change, we need to use QgsFeaturRequest
+            # but not specifying it here means everything comes back
+            #vprovider.select( all_attributes )
             fields = vprovider.fields()
             geom_type = QGis.WKBPolygon
 
@@ -130,17 +128,19 @@ class GeomProcessingThreadv20( QThread ):
                     str( self.lyr.dataProvider().dataSourceUri() ).split("|")[0] 
                 )[1] 
             )[0] + "_w_singleparts.shp"
+            self.log_message.emit( "[ BEFORE WRITER ]" )
             writer = QgsVectorFileWriter(
                 os.path.join( shp_path, shp_name ),
-                "CP1250",
+                "System",
                 fields,
                 geom_type,
                 vprovider.crs()
             )
 
+            self.log_message.emit( "[ AFTER WRITER ]" )
             if writer.hasError() != QgsVectorFileWriter.NoError:
                 QMessageBox.critical(None, self.tr("Geometry Processing"),
-                self.tr("There was an error creating the shapefile:\n\n\t%1").arg( str( writer.hasError() ) ),
+                self.tr("There was an error creating the shapefile:\n\n\t%s" % str( writer.hasError() ) ),
                 QMessageBox.Ok | QMessageBox.Default,
                 QMessageBox.NoButton)
                 raise Exception( "[ CREATE ERROR ]: writing shapefile %s" % os.path.join( shp_path, shp_name ) )
@@ -153,7 +153,10 @@ class GeomProcessingThreadv20( QThread ):
             nElement = 0
 
             self.geom_status_update.emit( 0 ) # just to make sure
-            while vprovider.nextFeature( inFeat ):
+            # API change, use .getFeatures in forloop
+            self.log_message.emit( "[ BEFORE FEAT RECURSE ]" )
+            features = self.lyr.dataProvider().getFeatures()
+            while features.nextFeature( inFeat ):
                 nElement += 1
                 inGeom = inFeat.geometry()
                 atMap = inFeat.attributeMap()
@@ -205,7 +208,7 @@ class MultipartTransformerv20:
         self.plugin_dir = QFileInfo(QgsApplication.qgisUserDbFilePath()).path() + "/python/plugins/multiparttransformer"
         # initialize locale
         localePath = ""
-        locale = QSettings().value("locale/userLocale").toString()[0:2]
+        locale = QSettings().value("locale/userLocale", type=str)[0:2]
 
         if QFileInfo(self.plugin_dir).exists():
             localePath = self.plugin_dir + "/i18n/multiparttransformer_" + locale + ".qm"
@@ -240,7 +243,7 @@ class MultipartTransformerv20:
     def initGui(self):
         # Create action that will start plugin configuration
         self.action = QAction(
-            QIcon(QPixmap(_fromUtf8(os.path.join( self.abspath, "icon2.png")))),
+            QIcon(QPixmap(unicode(os.path.join( self.abspath, "icon2.png")))),
             u"Multipart Transform: convert multi-part polygons with style!", self.iface.mainWindow())
         # connect the action to the run method
         QObject.connect(self.action, SIGNAL("triggered()"), self.run)
@@ -418,7 +421,7 @@ class MultipartTransformerv20:
         
 
         convert = QMessageBox.question( self.dlg, self.dlg.tr("Process Geometry"),
-                   self.dlg.tr("Would you like to convert the layers:\n\n%1\n\nfrom a multi-part geometry to a single-part?").arg( str(widget_item.layer_instance.name()) ),
+                   self.dlg.tr("Would you like to convert the layers:\n\n%s\n\nfrom a multi-part geometry to a single-part?" % str(widget_item.layer_instance.name()) ) ,
                    QMessageBox.Yes, QMessageBox.No, QMessageBox.NoButton )
 
         if convert == QMessageBox.Yes:
@@ -462,7 +465,7 @@ class MultipartTransformerv20:
 
             QMessageBox.information( self.dlg,
                 self.dlg.tr("Valid Geometry Conversion!"),
-                self.dlg.tr("The conversion was successful. The new shapefile is located here path:\n\n%1\n\nAnd it will be added to this Qgis mapfile now!").arg( new_lyr_path ) )
+                self.dlg.tr("The conversion was successful. The new shapefile is located here path:\n\n%s\n\nAnd it will be added to this Qgis mapfile now!" % new_lyr_path ) )
 
             self.iface.addVectorLayer(
                 new_lyr_path,
