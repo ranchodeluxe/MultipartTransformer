@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_multiparttransformer.ui'
 #
-# Created: Thu Sep 19 15:42:41 2013
+# Created: Thu Sep 19 17:34:06 2013
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -21,9 +21,6 @@ class Ui_MultipartTransformer(object):
         MultipartTransformer.setToolTip(_fromUtf8(""))
         self.btnBrowse = QtGui.QPushButton(MultipartTransformer)
         self.btnBrowse.setGeometry(QtCore.QRect(10, 50, 171, 31))
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("browser_button.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnBrowse.setIcon(icon)
         self.btnBrowse.setIconSize(QtCore.QSize(25, 25))
         self.btnBrowse.setObjectName(_fromUtf8("btnBrowse"))
         self.listWidget = QtGui.QListWidget(MultipartTransformer)
@@ -34,9 +31,9 @@ class Ui_MultipartTransformer(object):
         self.btnTOC = QtGui.QPushButton(MultipartTransformer)
         self.btnTOC.setGeometry(QtCore.QRect(190, 50, 41, 31))
         self.btnTOC.setText(_fromUtf8(""))
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8("layers_button.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnTOC.setIcon(icon1)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("layers_button.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnTOC.setIcon(icon)
         self.btnTOC.setIconSize(QtCore.QSize(30, 30))
         self.btnTOC.setAutoRepeat(False)
         self.btnTOC.setObjectName(_fromUtf8("btnTOC"))

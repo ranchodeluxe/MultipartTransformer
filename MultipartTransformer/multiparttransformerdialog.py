@@ -86,10 +86,17 @@ class MultipartTransformerDialog(QtGui.QDialog):
 
     def add2ListWidget( self, icon, text, layer_instance ):
         #self.dialogLogger( "[ DISPLAY TEXT ]: %s" % str( text ) )
-        item = QtGui.QListWidgetItem( icon, text, parent=self.ui.listWidget )
+        item = QtGui.QListWidgetItem( icon, text )
+        # set default ( unenabled ) brush strokes
+        item.setBackground( QtGui.QBrush(QtCore.Qt.white) )
+        item.setForeground( QtGui.QBrush(QtCore.Qt.black) )
+        self.ui.listWidget.addItem( item )
         # attempt to store layer state on the object
         item.layer_instance = layer_instance
 
+    def iterWidgetItems( self ):
+        for i in range( self.ui.listWidget.count() ):
+            yield self.ui.listWidget.item( i )
 
     def dialogLogger( self, message ):
         QgsMessageLog.logMessage( str( message ), "MULTIPOLY DIALOG" )

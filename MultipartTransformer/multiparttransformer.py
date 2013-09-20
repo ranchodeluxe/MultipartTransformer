@@ -21,6 +21,7 @@ class GeomProcessingThread( QThread ):
     #
     geom_m2s = pyqtSignal( int, str )
     finished = pyqtSignal()
+    update_widget_colors = pyqtSignal()
     general_error = pyqtSignal( str )
     log_message = pyqtSignal( str )
     status_update = pyqtSignal( str )
@@ -289,6 +290,7 @@ class MultipartTransformer:
         # make sure to clean worker threads
         # from previous runs before we create new ones
         self.cleanWorkers()
+
         # clear the listWidget box
         self.dlg.ui.listWidget.clear()
 
@@ -333,6 +335,20 @@ class MultipartTransformer:
             worker_thread.add_2_widget.connect( self.dlg.add2ListWidget )
             worker_thread.start()
             self.worker_threads.append( worker_thread )
+
+    def unbindWidgetItemClicks( self ):
+        try:
+            self.dlg.ui.listWidget.itemDoubleClicked.disconnect( self.handleItemDblClick )
+            self.logger( "[ CLICK DISABLED]" );
+        except TypeError, te: # it's not connected
+            pass
+
+    def updateWidgetItems( self ):
+        for item in self.dlg.iterWidgetItems():
+            item.setBackground( QBrush( Qt.white ) )
+            item.setForeground( QBrush( Qt.black ) )
+
+        #self.dlg.ui.listWidget.itemDoubleClicked.connect( self.handleItemDblClick )
 
     def handleItemSelectionChanged( self ):
         pass

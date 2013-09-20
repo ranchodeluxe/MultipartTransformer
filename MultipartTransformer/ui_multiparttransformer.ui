@@ -31,10 +31,6 @@
    <property name="text">
     <string>  Browse to Shapefiles</string>
    </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>browser_button.png</normaloff>browser_button.png</iconset>
-   </property>
    <property name="iconSize">
     <size>
      <width>25</width>
