@@ -62,7 +62,7 @@ class Ui_MultipartTransformer(object):
         QtCore.QMetaObject.connectSlotsByName(MultipartTransformer)
 
     def retranslateUi(self, MultipartTransformer):
-        MultipartTransformer.setWindowTitle(QtGui.QApplication.translate("MultipartTransformer", "InaSAFE Multipart Transformer", None, QtGui.QApplication.UnicodeUTF8))
+        MultipartTransformer.setWindowTitle(QtGui.QApplication.translate("MultipartTransformer", "Multipart Transformer", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MultipartTransformer", "Inspect polygon shapefiles for multi-part geometries.\n"
 "Double click ones you want to convert to single-part geometries", None, QtGui.QApplication.UnicodeUTF8))
         self.btnBrowse.setToolTip(QtGui.QApplication.translate("MultipartTransformer", "browse to a shapefile directory", None, QtGui.QApplication.UnicodeUTF8))
