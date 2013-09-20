@@ -21,8 +21,9 @@ except AttributeError:
 #
 #
 class GeomProcessingThread( QThread ):
+
     #
-    # SIGNALS
+    # EVENTS/SIGNALS
     #
     geom_m2s = pyqtSignal( int, str )
     geom_status_update = pyqtSignal( int )
@@ -57,16 +58,19 @@ class GeomProcessingThread( QThread ):
     def inspectForMultipart( self ):
 
         try:
+            all_attributes = self.lyr.dataProvider().attributeIndexes()
+            self.lyr.dataProvider().select( all_attributes )
             #  determine if the layer has multipart features, then give it the right icon
             icon = QIcon( os.path.join( self.abspath, 'single_icon.png' ) ) # default icon
             feat = QgsFeature()
             while self.lyr.dataProvider().nextFeature(feat):
 
                 #  TODO: we don't handle these, maybe we should mention bad things to user
-                if feat.geometry() != None and not feat.geometry().isGeosEmpty():
-                    if feat.geometry().isMultipart():
-                        icon = QIcon( os.path.join( self.abspath, 'multi_icon.png' ) )
-                        break
+                #if feat.geometry().isGeosEmpty() or not feat.geometry().isGeosValid():
+                feat_geom = feat.geometry()
+                if feat_geom.isMultipart():
+                    icon = QIcon( os.path.join( self.abspath, 'multi_icon.png' ) )
+                    break
 
             display_text = str( self.lyr.name() )
             if self.list_type == 'browse':
@@ -103,10 +107,10 @@ class GeomProcessingThread( QThread ):
             #  so we don't need to worry about NULL providers or geoms
             #
             vprovider = self.lyr.dataProvider()
-            allAttrs = vprovider.attributeIndexes()
-            vprovider.select( allAttrs )
+            all_attributes = vprovider.attributeIndexes()
+            vprovider.select( all_attributes )
             fields = vprovider.fields()
-            geomType = QGis.WKBPolygon
+            geom_type = QGis.WKBPolygon
 
             shp_path = os.path.split( str( self.lyr.dataProvider().dataSourceUri() ).split("|")[0] )[0]
             shp_name = os.path.splitext( os.path.split( str( self.lyr.dataProvider().dataSourceUri() ).split("|")[0] )[1] )[0] + "_w_singleparts.shp"
@@ -114,12 +118,12 @@ class GeomProcessingThread( QThread ):
                 os.path.join( shp_path, shp_name ),
                 "CP1250",
                 fields,
-                geomType,
+                geom_type,
                 vprovider.crs()
             )
 
             if writer.hasError() != QgsVectorFileWriter.NoError:
-                QMessageBox.critical(None, self.tr("Geom Processing"),
+                QMessageBox.critical(None, self.tr("Geometry Processing"),
                         self.tr("There was an error creating the shapefile:\n\n\t%1").arg( str( writer.hasError() ) ),
                         QMessageBox.Ok | QMessageBox.Default,
                         QMessageBox.NoButton)
@@ -205,7 +209,7 @@ class MultipartTransformer:
 
         #
         #
-        #  worker thread pool
+        #  worker thread pools
         #
         #
         self.geom_worker_threads = []
@@ -338,8 +342,9 @@ class MultipartTransformer:
             #   
             #   
             #  reading *big* shapefiles can bog down the fileDialog.
-            #  Thread this section below and emit signal for each
-            #  layer that finishes so layerinfo can be added to listWidget
+            #  Read each layer's features in a QThread
+            #  and emit signal on completion so
+            #  layerinfo can be added to listWidget
             #   
             #   
             worker_thread = GeomProcessingThread(
