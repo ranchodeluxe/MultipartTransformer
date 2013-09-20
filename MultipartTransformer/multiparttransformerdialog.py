@@ -71,7 +71,7 @@ class MultipartTransformerDialog(QtGui.QDialog):
         shps = glob.glob( os.path.join( self.selected_filepath, "*.shp" ) ) 
         if len(shps) == 0:
             self.ui.listWidget.clear()
-            QMessageBox.information( self.dlg,
+            QtGui.QMessageBox.information( self.dlg,
                 self.dlg.tr("No Multi-part Polygons"),
                 self.dlg.tr("There were no multi-part polygon shapefilesfound in the selected directory") )
             return
