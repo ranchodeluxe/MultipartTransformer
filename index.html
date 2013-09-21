@@ -33,8 +33,8 @@
 
 <p>Thanks for this opportunity. I only get a chance to build QGIS plugins once in awhile and it's always fun to learn new things about the API.</p>
 
-<pre><code>$ qgis.utils.iface == QGis.GOODFUN
-True
+<pre><code>$ qgis.utils.iface == GOODFUN
+$ True
 </code></pre>
 
 <h3>
@@ -44,12 +44,12 @@ True
 
 <ol>
 <li>The tool will take input from TOC layers or directories</li>
-<li>The tool will flag input QgsVectorLayers ( of any dataProvider type ) in the related family of QGis.WKBMultiPolygon's</li>
+<li>The tool will flag input QgsVectorLayers ( of any dataProvider type ) in the related family of MuliPolygons</li>
 <li>It will add flagged inputs to a QListWidget Item</li>
 <li>After a user select's an item we'll walk them through an editing workflow, which will include...</li>
 <li>A choice to transform multi-part polygons with one of the many existing multi-part editing tools, or... </li>
 <li>A choice to fix multi-part polygons in place. By "in place" I mean we would not solve the problem by exporting all the layer's features to a new datasource. Rather, we would remove the multi-part record, break it up and append it to the existing datasource with the fields intact. </li>
-<li>The tool should work with QGIS version from 1.8 through 2.x nightly build. I wanted to do this because I don't know a single soul using version 2.x</li>
+<li>The tool should work with QGIS versions from 1.8 through 2.x nightly build. I wanted to do this because I don't know a single soul using version 2.x</li>
 </ol><h3>
 <a name="hurdles" class="anchor" href="#hurdles"><span class="octicon octicon-link"></span></a>Hurdles</h3>
 
@@ -62,18 +62,19 @@ True
 <h3>
 <a name="qgis-versions-tested" class="anchor" href="#qgis-versions-tested"><span class="octicon octicon-link"></span></a>QGIS Versions Tested</h3>
 
-<p>In the current state, the plugin works across the QGIS major release from 1.99 to 2.x with <a href="https://github.com/thebigspoon/MultipartTransformer/commit/9c96a03e2a5e9808687a018d1986e6ac8931532f#diff-0">not-so-smart hack</a>. It has been tested on the following platforms:</p>
+<p>In the current state, the plugin works across the QGIS 1.99 to 2.0.x major release using a <a href="https://github.com/thebigspoon/MultipartTransformer/commit/9c96a03e2a5e9808687a018d1986e6ac8931532f#diff-0">not-so-smart hack</a>. It has been tested on the following platforms:</p>
 
-<ol>
-<li>Ubuntu 12.10 w/ QGIS 2.x Nightly Build --&gt; PASS</li>
-<li>Ubuntu 12.04 w/ QGIS v1.9 --&gt; PASS</li>
-<li>Mac OSX w/ QGIS v1.8 --&gt; FAIL: 
-Logging doesn't seem to work and you can only choose your browse directory once</li>
-</ol><h3>
+<pre><code>1. Ubuntu 12.10 w/ QGIS v2.0 Nightly Build --&gt; PASS
+2. Ubuntu 12.04 w/ QGIS v1.9 --&gt; PASS
+3. Ubuntu 12.04 w/ QGIS v1.8 --&gt; PASS
+4. Mac OSX w/ QGIS v1.8 --&gt; FAIL: Logging doesn't work among browsing weirdness
+</code></pre>
+
+<h3>
 <a name="plugins-xml" class="anchor" href="#plugins-xml"><span class="octicon octicon-link"></span></a>Plugins XML</h3>
 
 <p>This plugin can be loaded with the QGIS Python Plugin manager by adding the <a href="http://qgisplugin.inasafe.osgeohacks.com/plugins.xml">plugins.xml URL over here</a> to the list of repositories.
-<img src="http://tinypic.com?ref=243rabn" alt="Picture of Plugin"></p>
+<img src="http://i43.tinypic.com/2e17t39.png" alt="Picture of Plugin"></p>
 
 <h3>
 <a name="technical-pain-points-for-improvement" class="anchor" href="#technical-pain-points-for-improvement"><span class="octicon octicon-link"></span></a>Technical Pain Points for Improvement</h3>
