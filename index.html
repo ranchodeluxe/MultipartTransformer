@@ -88,6 +88,8 @@ $ True
 <li><p>QFileDialog.saveState() was not working and so we have a <a href="https://github.com/thebigspoon/MultipartTransformer/blob/gh-pages/MultipartTransformer/multiparttransformerdialog.py#L28-L47">jenky workaround</a>. I think this is what's wrong on the Mac OSX version</p></li>
 <li><p>People like to name their shapefiles. Give them a file dialog for creating a <a href="https://github.com/thebigspoon/MultipartTransformer/blob/gh-pages/MultipartTransformer/multiparttransformer_v20.py#L124-L140">new shapefile instead of auto creating one</a>.</p></li>
 <li><p>Maintaining <a href="https://github.com/thebigspoon/MultipartTransformer/commit/9c96a03e2a5e9808687a018d1986e6ac8931532f#diff-0">two separate plugin APIs</a> for different QGIS versions is not smart, as the <a href="http://hub.qgis.org/wiki/quantum-gis/Python_plugin_API_changes_from_18_to_20">last line on the API change doc</a> points out. So either merge logic or pick one. At least it was a fun test!</p></li>
+<li><p>The Mac OSX version styling looks really junky. Make it look better. </p></li>
+<li><p>On Mac OSX QThreads do not seem to respond to <code>.terminate()</code> and <a href="https://github.com/thebigspoon/MultipartTransformer/blob/gh-pages/MultipartTransformer/multiparttransformer_v20.py#L300-L318">end up locking</a>. Write once, run everywhere FAIL.</p></li>
 <li><p>I've heard that QThread is not best used as a parent class; that there's some type of performance hit and people should use QObject.moveToThread( QThread ) instead. So investigate that.</p></li>
 </ol><h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
