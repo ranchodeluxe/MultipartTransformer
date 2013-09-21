@@ -33,21 +33,24 @@
 
 <p>Thanks for this opportunity. I only get a chance to build QGIS plugins once in awhile and it's always fun to learn new things about the API.</p>
 
+<pre><code>$ qgis.utils.iface == QGis.GOODFUN
+True
+</code></pre>
+
 <h3>
 <a name="initial-approach" class="anchor" href="#initial-approach"><span class="octicon octicon-link"></span></a>Initial Approach</h3>
 
 <p>I'm an idealist and my first approach did not take time constraints or the real world into account. Here's my original road map for the tool:</p>
 
-<pre><code>1. The tool will take input from TOC layers or directories
-2. The tool will flag input QgsVectorLayers ( of any dataProvider type ) in the related family of QGis.WKBMultiPolygon's
-3. It will add flagged inputs to a QListWidget Item
-4. After a user select's an item we'll walk them through an editing workflow, which will include...
-5. A choice to transform multi-part polygons with one of the many existing multi-part editing tools, or... 
-6. A choice to fix multi-part polygons in place. By "in place" I mean we would not solve the problem by exporting all the layer's features to a new datasource. Rather, we would remove the multi-part record, break it up and append it to the existing datasource with the fields intact. 
-7. The tool should work with QGIS version from 1.8 through 2.x nightly build. I wanted to do this because I don't know a single soul using version 2.x
-</code></pre>
-
-<h3>
+<ol>
+<li>The tool will take input from TOC layers or directories</li>
+<li>The tool will flag input QgsVectorLayers ( of any dataProvider type ) in the related family of QGis.WKBMultiPolygon's</li>
+<li>It will add flagged inputs to a QListWidget Item</li>
+<li>After a user select's an item we'll walk them through an editing workflow, which will include...</li>
+<li>A choice to transform multi-part polygons with one of the many existing multi-part editing tools, or... </li>
+<li>A choice to fix multi-part polygons in place. By "in place" I mean we would not solve the problem by exporting all the layer's features to a new datasource. Rather, we would remove the multi-part record, break it up and append it to the existing datasource with the fields intact. </li>
+<li>The tool should work with QGIS version from 1.8 through 2.x nightly build. I wanted to do this because I don't know a single soul using version 2.x</li>
+</ol><h3>
 <a name="hurdles" class="anchor" href="#hurdles"><span class="octicon octicon-link"></span></a>Hurdles</h3>
 
 <p>I quickly discovered issues with the above road map while testing against <a href="https://github.com/AIFDR/inasafe_data">InaSAFE's data repo</a>. </p>
@@ -59,16 +62,18 @@
 <h3>
 <a name="qgis-versions-tested" class="anchor" href="#qgis-versions-tested"><span class="octicon octicon-link"></span></a>QGIS Versions Tested</h3>
 
-<p>In it's current state, the plugin works across the QGIS major release from 1.99 to 2.x. It has been tested on the following platforms:</p>
+<p>In the current state, the plugin works across the QGIS major release from 1.99 to 2.x with <a href="https://github.com/thebigspoon/MultipartTransformer/commit/9c96a03e2a5e9808687a018d1986e6ac8931532f#diff-0">not-so-smart hack</a>. It has been tested on the following platforms:</p>
 
 <ol>
 <li>Ubuntu 12.10 w/ QGIS 2.x Nightly Build --&gt; PASS</li>
 <li>Ubuntu 12.04 w/ QGIS v1.9 --&gt; PASS</li>
-<li>Mac OSX w/ QGIS v1.8 --&gt; FAIL: Logging doesn't seem to work and you can only choose your browse directory once</li>
+<li>Mac OSX w/ QGIS v1.8 --&gt; FAIL: 
+Logging doesn't seem to work and you can only choose your browse directory once</li>
 </ol><h3>
 <a name="plugins-xml" class="anchor" href="#plugins-xml"><span class="octicon octicon-link"></span></a>Plugins XML</h3>
 
-<p>This plugin can be loaded with the QGIS Python Plugin manager by adding the <a href="http://qgisplugin.inasafe.osgeohacks.com/plugins.xml">plugins.xml URL over here</a> to the list of repositories.</p>
+<p>This plugin can be loaded with the QGIS Python Plugin manager by adding the <a href="http://qgisplugin.inasafe.osgeohacks.com/plugins.xml">plugins.xml URL over here</a> to the list of repositories.
+<img src="http://tinypic.com?ref=243rabn" alt="Picture of Plugin"></p>
 
 <h3>
 <a name="technical-pain-points-for-improvement" class="anchor" href="#technical-pain-points-for-improvement"><span class="octicon octicon-link"></span></a>Technical Pain Points for Improvement</h3>
@@ -76,7 +81,12 @@
 <p>Here's some thoughts on how the plugin code can be improved:</p>
 
 <ol>
-<li>
+<li><p>Multi-part fixes <em>should</em> be done in place. It's just more elegant. So this would be good to tackle.</p></li>
+<li><p>Add in ability to handle all QgsVectorLayer data providers. It wouldn't take much. </p></li>
+<li><p>QFileDialog.saveState() was not working and so we have a <a href="https://github.com/thebigspoon/MultipartTransformer/blob/gh-pages/MultipartTransformer/multiparttransformerdialog.py#L28-L47">jenky workaround</a>. I think this is what's wrong on the Mac OSX version</p></li>
+<li><p>People like to name their shapefiles. Give them a file dialog for creating a <a href="https://github.com/thebigspoon/MultipartTransformer/blob/gh-pages/MultipartTransformer/multiparttransformer_v20.py#L124-L140">new shapefile instead of auto creating one</a>.</p></li>
+<li><p>Maintaining <a href="https://github.com/thebigspoon/MultipartTransformer/commit/9c96a03e2a5e9808687a018d1986e6ac8931532f#diff-0">two separate plugin APIs</a> for different QGIS versions is not smart, as the <a href="http://hub.qgis.org/wiki/quantum-gis/Python_plugin_API_changes_from_18_to_20">last line on the API change doc</a> points out. So either merge logic or pick one. At least it was a fun test!</p></li>
+<li><p>I've heard that QThread is not best used as a parent class; that there's some type of performance hit and people should use QObject.moveToThread( QThread ) instead. So investigate that.</p></li>
 </ol><h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
