@@ -29,36 +29,58 @@
       </header>
       <section>
         <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<a name="intro" class="anchor" href="#intro"><span class="octicon octicon-link"></span></a>Intro</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>Thanks for this opportunity. I only get a chance to build QGIS plugins once in awhile and it's always fun to learn new things about the API.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<h3>
+<a name="initial-approach" class="anchor" href="#initial-approach"><span class="octicon octicon-link"></span></a>Initial Approach</h3>
+
+<p>I'm an idealist and my first approach did not take time constraints or the real world into account. Here's my original road map for the tool:</p>
+
+<pre><code>1. The tool will take input from TOC layers or directories
+2. The tool will flag input QgsVectorLayers ( of any dataProvider type ) in the related family of QGis.WKBMultiPolygon's
+3. It will add flagged inputs to a QListWidget Item
+4. After a user select's an item we'll walk them through an editing workflow, which will include...
+5. A choice to transform multi-part polygons with one of the many existing multi-part editing tools, or... 
+6. A choice to fix multi-part polygons in place. By "in place" I mean we would not solve the problem by exporting all the layer's features to a new datasource. Rather, we would remove the multi-part record, break it up and append it to the existing datasource with the fields intact. 
+7. The tool should work with QGIS version from 1.8 through 2.x nightly build. I wanted to do this because I don't know a single soul using version 2.x
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h3>
+<a name="hurdles" class="anchor" href="#hurdles"><span class="octicon octicon-link"></span></a>Hurdles</h3>
+
+<p>I quickly discovered issues with the above road map while testing against <a href="https://github.com/AIFDR/inasafe_data">InaSAFE's data repo</a>. </p>
+
+<p>Item <code>2</code> above misses the fact that shapefiles have no concept of MultiPolygoness even after being read by OGR. This means we cannot quickly flag shapefiles by a layer-level attribute. I realized we'd have to loop through <em>all</em> layer features hunting for a multi-part geometry to flag them correctly. In combination with the size of some <a href="https://github.com/AIFDR/inasafe_data/blob/master/exposure/OSM_structures_indonesia_20121005.shp">InaSAFE shapefiles</a>, it became apparent that any feature looping would have to be threaded -- both for multi-part flagging and multi-part fixing. Because of this issue i decided to abandon the idea of working with <em>all</em> QgsVectorLayer data providers and to focus exclusively on shapefiles.</p>
+
+<p>Item <code>5</code> above was unnecessary so i abandoned it. I attempted to tackle item <code>6</code> but found myself spending too much time on the implementation because of some new API areas. I decided exporting all features was a nice fallback to get this thing done.</p>
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="qgis-versions-tested" class="anchor" href="#qgis-versions-tested"><span class="octicon octicon-link"></span></a>QGIS Versions Tested</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>In it's current state, the plugin works across the QGIS major release from 1.99 to 2.x. It has been tested on the following platforms:</p>
+
+<ol>
+<li>Ubuntu 12.10 w/ QGIS 2.x Nightly Build --&gt; PASS</li>
+<li>Ubuntu 12.04 w/ QGIS v1.9 --&gt; PASS</li>
+<li>Mac OSX w/ QGIS v1.8 --&gt; FAIL: Logging doesn't seem to work and you can only choose your browse directory once</li>
+</ol><h3>
+<a name="plugins-xml" class="anchor" href="#plugins-xml"><span class="octicon octicon-link"></span></a>Plugins XML</h3>
+
+<p>This plugin can be loaded with the QGIS Python Plugin manager by adding the <a href="http://qgisplugin.inasafe.osgeohacks.com/plugins.xml">plugins.xml URL over here</a> to the list of repositories.</p>
 
 <h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<a name="technical-pain-points-for-improvement" class="anchor" href="#technical-pain-points-for-improvement"><span class="octicon octicon-link"></span></a>Technical Pain Points for Improvement</h3>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>Here's some thoughts on how the plugin code can be improved:</p>
 
-<h3>
+<ol>
+<li>
+</ol><h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Greg Corradini (<a href="https://github.com/thebigspoon" class="user-mention">@thebigspoon</a>) and thanks to Aaron Racicot (<a href="https://github.com/aaronr" class="user-mention">@aaronr</a>) for his quick testing</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/thebigspoon">thebigspoon</a></p>
